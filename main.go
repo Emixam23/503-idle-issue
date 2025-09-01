@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	timeout = 3 * time.Second
+	timeout = 10 * time.Second
 )
 
 func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
