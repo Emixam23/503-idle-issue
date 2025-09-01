@@ -1,34 +1,25 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"time"
 )
 
-const (
-	timeout = 10 * time.Second
-)
-
-func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	_, err := fmt.Fprintln(w, "Hello, world!")
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
-}
-
 func main() {
-	r := mux.NewRouter()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hello, World!"))
+	})
 
-	// GET /
-	r.HandleFunc("/", helloWorldHandler).Methods(http.MethodGet)
+	s := &http.Server{
+		Addr:              ":3000",
+		Handler:           mux,
+		ReadHeaderTimeout: 2 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       10 * time.Second,
+	}
 
-	muxWithMiddlewares := http.TimeoutHandler(r, timeout, "Timeout!")
-
-	addr := ":8080"
-	log.Printf("listening on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, muxWithMiddlewares))
+	log.Println("Starting server on :3000")
+	log.Fatal(s.ListenAndServe())
 }
