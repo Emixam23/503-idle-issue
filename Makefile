@@ -3,6 +3,9 @@
 all: install-proxies start-envoy install-oha run-api test
 	@echo "✅ All done."
 
+
+run-test: stop_api run-api start-envoy test
+
 install-proxies: install-envoy
 
 install-envoy:
@@ -16,6 +19,9 @@ start-envoy:
 install-oha:
 	wget -O oha https://github.com/hatoo/oha/releases/download/v1.9.0/oha-macos-arm64 && chmod +x oha
 	@echo "✅ Oha installed"
+
+stop_api:
+	$(shell zsh kill_port_process 8080)
 
 run-api:
 	go run main.go &
